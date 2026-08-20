@@ -1,12 +1,39 @@
 {
   "pages": [
-    "pages/home/index"
+    "pages/home/index",
+    "pages/patterns/index",
+    "pages/inventory/index",
+    "pages/profile/index"
   ],
   "window": {
     "navigationBarTitleText": "豆老庄",
     "navigationBarBackgroundColor": "#FFF9F0",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#FFF9F0"
+  },
+  "tabBar": {
+    "color": "#897d73",
+    "selectedColor": "#694c3a",
+    "backgroundColor": "#fffdf9",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/patterns/index",
+        "text": "图纸库"
+      },
+      {
+        "pagePath": "pages/inventory/index",
+        "text": "豆子库"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "个人中心"
+      }
+    ]
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"

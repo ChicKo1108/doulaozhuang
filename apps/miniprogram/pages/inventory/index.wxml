@@ -1,0 +1,61 @@
+<view class="page">
+  <view wx:if="{{!vault}}" class="create-state">
+    <view class="vault-icon">▦</view>
+    <text class="title">创建我的豆子库</text>
+    <text class="copy">记录你拥有的拼豆。创建后可持续添加不同品牌、色卡和色号。</text>
+    <button class="primary-button" bindtap="beginCreate">创建豆子库</button>
+  </view>
+
+  <view wx:else>
+    <view class="header-card">
+      <text class="eyebrow">个人库存</text>
+      <text class="title">{{vault.name}}</text>
+      <text class="copy">已收录 {{inventory.length}} 种拼豆颜色</text>
+      <button class="add-button" bindtap="beginCreate">添加豆子</button>
+    </view>
+
+    <view class="inventory-list">
+      <view wx:for="{{inventory}}" wx:key="id" class="inventory-item">
+        <view class="color-dot" style="background-color: {{item.hex}};"></view>
+        <view class="item-copy">
+          <text class="code">{{item.code}}</text>
+          <text class="meta">{{item.brand}} · {{item.paletteName}}</text>
+        </view>
+        <text class="quantity">{{item.quantity}} 颗</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{showEditor}}" class="editor-mask">
+    <view class="editor-card">
+      <view class="editor-title-row">
+        <text class="editor-title">{{vault ? '添加豆子' : '创建豆子库'}}</text>
+        <text class="close" bindtap="closeEditor">×</text>
+      </view>
+
+      <text class="label">品牌</text>
+      <picker range="{{brands}}" value="{{selectedBrandIndex}}" bindchange="onBrandChange">
+        <view class="picker-value">{{brands[selectedBrandIndex]}} <text>⌄</text></view>
+      </picker>
+
+      <text class="label">色卡</text>
+      <picker range="{{paletteOptions}}" value="{{selectedPaletteIndex}}" bindchange="onPaletteChange">
+        <view class="picker-value">{{paletteOptions[selectedPaletteIndex]}} <text>⌄</text></view>
+      </picker>
+
+      <text class="label">色号</text>
+      <picker wx:if="{{isMard}}" range="{{colorOptions}}" value="{{selectedColorIndex}}" bindchange="onColorChange">
+        <view class="picker-value">{{colorOptions[selectedColorIndex]}} <text>⌄</text></view>
+      </picker>
+      <input wx:else class="text-input" placeholder="输入色号，例如 001" value="{{customCode}}" bindinput="onCustomCodeInput" />
+
+      <text class="label">数量</text>
+      <input class="text-input" type="number" value="{{quantity}}" bindinput="onQuantityInput" />
+      <view class="quick-quantities">
+        <text wx:for="{{quickQuantities}}" wx:key="*this" class="quick-item {{quantity === item ? 'active-quick' : ''}}" data-quantity="{{item}}" bindtap="selectQuickQuantity">{{item}}</text>
+      </view>
+
+      <button class="primary-button" bindtap="saveBean">{{vault ? '加入豆子库' : '创建并加入第一种豆子'}}</button>
+    </view>
+  </view>
+</view>

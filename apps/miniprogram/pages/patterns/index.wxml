@@ -1,0 +1,38 @@
+<view class="page">
+  <view class="hero-card">
+    <text class="eyebrow">MARD 221 色</text>
+    <text class="title">图片转图纸</text>
+    <text class="subtitle">自动使用完整 Mard 221 色卡生成 32 × 32 拼豆图纸。</text>
+    <button class="primary-button" bindtap="chooseImage" loading="{{isConverting}}">
+      {{sourcePath ? '更换图片并重新生成' : '选择图片'}}
+    </button>
+  </view>
+
+  <view wx:if="{{sourcePath}}" class="card">
+    <image class="source-image" src="{{sourcePath}}" mode="aspectFill" />
+    <canvas type="2d" id="conversionCanvas" class="conversion-canvas"></canvas>
+  </view>
+
+  <view wx:if="{{cells.length}}" class="card">
+    <view class="section-heading">
+      <view>
+        <text class="section-title">图纸预览</text>
+        <text class="section-caption">固定 {{gridSize}} × {{gridSize}} 格 · {{actualColorCount}} 色 · {{totalBeads}} 颗</text>
+      </view>
+    </view>
+    <view class="pattern-grid">
+      <view wx:for="{{cells}}" wx:key="index" class="pattern-cell" style="background-color: {{item.hex}};"></view>
+    </view>
+
+    <input class="name-input" placeholder="给这张图纸起个名字" value="{{patternName}}" bindinput="onNameInput" />
+    <button class="primary-button" bindtap="saveCurrentPattern">保存到我的图纸</button>
+  </view>
+
+  <view wx:if="{{recentPatterns.length}}" class="recent-section">
+    <text class="section-title">最近保存</text>
+    <view wx:for="{{recentPatterns}}" wx:key="id" class="recent-item">
+      <text>{{item.name}}</text>
+      <text class="recent-meta">{{item.totalBeads}} 颗 · {{item.colorCount}} 色</text>
+    </view>
+  </view>
+</view>
