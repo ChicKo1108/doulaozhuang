@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+coverage/
+*.log
+
+# WeChat Mini Program local files
+apps/miniprogram/private.config.json
+apps/miniprogram/miniprogram_npm/

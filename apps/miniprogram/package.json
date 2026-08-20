@@ -1,0 +1,8 @@
+{
+  "name": "@doulaozhuang/miniprogram",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {
+    "miniprogram-api-typings": "^4.0.4"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "doulaozhuang",
+  "version": "0.1.0",
+  "private": true,
+  "description": "豆老庄微信小程序与 API 服务",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run start:dev --workspace=@doulaozhuang/api",
+    "build:api": "npm run build --workspace=@doulaozhuang/api",
+    "start:api": "npm run start --workspace=@doulaozhuang/api",
+    "check:palette": "node scripts/check-mard-palette.mjs",
+    "typecheck:miniprogram": "node node_modules/typescript/bin/tsc --noEmit --project apps/miniprogram/tsconfig.json",
+    "test": "npm run test --workspace=@doulaozhuang/api && npm run typecheck:miniprogram"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

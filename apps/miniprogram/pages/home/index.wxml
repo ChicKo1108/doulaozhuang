@@ -1,0 +1,12 @@
+<view class="page">
+  <view class="hero">
+    <text class="eyebrow">拼豆管理工具</text>
+    <text class="title">{{title}}</text>
+    <text class="subtitle">{{subtitle}}</text>
+  </view>
+
+  <view class="notice">
+    <text class="notice-title">项目初始化完成</text>
+    <text class="notice-copy">下一步将导入 Mard 221 色卡，并接入库存管理。</text>
+  </view>
+</view>
