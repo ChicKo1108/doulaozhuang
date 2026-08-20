@@ -4,7 +4,7 @@
 
 ## 项目结构
 
-- `apps/miniprogram`：微信小程序原生客户端。
+- `apps/miniprogram`：微信小程序原生 JavaScript 客户端。
 - `apps/api`：NestJS API，负责登录、库存、图纸转换任务和业务事务。
 - `packages/shared-types`：共享领域类型。
 - `packages/mard-palette`：Mard 221 色卡的数据格式、校验器和正式色卡存放位置。

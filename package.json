@@ -12,8 +12,7 @@
     "build:api": "npm run build --workspace=@doulaozhuang/api",
     "start:api": "npm run start --workspace=@doulaozhuang/api",
     "check:palette": "node scripts/check-mard-palette.mjs",
-    "typecheck:miniprogram": "node node_modules/typescript/bin/tsc --noEmit --project apps/miniprogram/tsconfig.json",
-    "test": "npm run test --workspace=@doulaozhuang/api && npm run typecheck:miniprogram"
+    "test": "npm run test --workspace=@doulaozhuang/api"
   },
   "engines": {
     "node": ">=20"
