@@ -1,5 +1,5 @@
 const { palette } = require('../../utils/palette');
-const { SORT_OPTIONS } = require('../../utils/inventory-view');
+const { SORT_OPTIONS, getAvailableLetters, filterInventory } = require('../../utils/inventory-view');
 const api = require('../../utils/cloud-api');
 
 const ACTIVE_VAULT_KEY = 'doulaozhuang:active-vault-id:v1';
@@ -7,15 +7,17 @@ const VIEW_MODE_KEY = 'doulaozhuang:inventory-view-mode:v1';
 const brands = ['MARD', '婆娑拼豆', 'COCO', '咪小窝', '其他'];
 const paletteOptions = ['24 色', '48 色', '72 色', '96 色', '120 色', '221 色'];
 const quickQuantities = [100, 500, 1000, 2000];
+const quantityFilters = [50, 100, 200, 500, 1000].map((value) => ({ value, label: `${value}以内` }));
 
 function colorOptionsForBrand(brand) { return brand === 'MARD' ? palette.map((item) => `${item.code} · ${item.hex}`) : ['自定义色号']; }
 function formatOperation(operation) { return { ...operation, timeText: new Date(operation.createdAt).toLocaleString('zh-CN'), canUndo: !operation.undoneBy && operation.type !== 'UNDO' }; }
 
 Page({
   data: {
-    isLoggedIn: false, loginError: '', vaults: [], activeVault: null, inventory: [], replenishmentItems: [],
-    sortOptions: SORT_OPTIONS.map((item) => item.label), sortIds: SORT_OPTIONS.map((item) => item.id), selectedSortIndex: 0,
-    viewMode: 'detail', showVaultPanel: false, showVaultEditor: false, vaultEditorMode: 'create', vaultName: '',
+    isLoggedIn: false, loginError: '', vaults: [], activeVault: null, allInventory: [], inventory: [], replenishmentItems: [], inventoryLoading: false,
+    sortOptions: SORT_OPTIONS, selectedSortId: SORT_OPTIONS[0].id,
+    quantityFilters, selectedQuantityLimit: 0, letterFilters: [], selectedLetter: '',
+    viewMode: 'compact', showVaultPanel: false, showVaultEditor: false, vaultEditorMode: 'create', vaultName: '',
     showItemEditor: false, selectedItem: null, itemQuantity: '', operations: [],
     showAddColor: false, brands, paletteOptions, quickQuantities, selectedBrandIndex: 0, selectedPaletteIndex: 5, selectedColorIndex: 0,
     colorOptions: colorOptionsForBrand('MARD'), isMard: true, customCode: '', quantity: 1000,
@@ -35,7 +37,7 @@ Page({
       const vaults = await api.listVaults();
       const savedId = wx.getStorageSync(ACTIVE_VAULT_KEY);
       const activeVault = vaults.find((vault) => vault.id === savedId) || vaults[0] || null;
-      this.setData({ vaults, activeVault, viewMode: wx.getStorageSync(VIEW_MODE_KEY) || 'detail' });
+      this.setData({ vaults, activeVault, viewMode: wx.getStorageSync(VIEW_MODE_KEY) || 'compact' });
       getApp().globalData.activeVaultId = activeVault ? activeVault.id : '';
       if (activeVault) await this.refreshInventory();
     } catch (error) { this.showError(error); }
@@ -43,11 +45,17 @@ Page({
 
   async refreshInventory() {
     if (!this.data.activeVault) return;
+    const requestId = (this._inventoryRequestId || 0) + 1;
+    this._inventoryRequestId = requestId;
+    this.setData({ inventoryLoading: true });
     try {
-      const sort = this.data.sortIds[this.data.selectedSortIndex];
-      const overview = await api.getInventory(this.data.activeVault.id, sort);
-      this.setData({ inventory: overview.items, replenishmentItems: overview.replenishment.items });
-    } catch (error) { this.showError(error); }
+      const overview = await api.getInventory(this.data.activeVault.id, this.data.selectedSortId);
+      if (requestId !== this._inventoryRequestId) return;
+      const letterFilters = getAvailableLetters(overview.items);
+      const selectedLetter = letterFilters.includes(this.data.selectedLetter) ? this.data.selectedLetter : '';
+      this.setData({ allInventory: overview.items, letterFilters, selectedLetter, replenishmentItems: overview.replenishment.items }, () => this.applyInventoryFilters());
+    } catch (error) { if (requestId === this._inventoryRequestId) this.showError(error); }
+    finally { if (requestId === this._inventoryRequestId) this.setData({ inventoryLoading: false }); }
   },
 
   showError(error) { wx.showToast({ title: error.message || '操作失败，请重试', icon: 'none' }); },
@@ -94,7 +102,11 @@ Page({
     }});
   },
 
-  onSortChange(event) { this.setData({ selectedSortIndex: Number(event.detail.value) }, () => this.refreshInventory()); },
+  selectSort(event) { const selectedSortId = event.currentTarget.dataset.id; if (selectedSortId === this.data.selectedSortId) return; this.setData({ selectedSortId }, () => this.refreshInventory()); },
+  selectQuantityFilter(event) { this.setData({ selectedQuantityLimit: Number(event.currentTarget.dataset.value) }, () => this.applyInventoryFilters()); },
+  selectLetterFilter(event) { this.setData({ selectedLetter: event.currentTarget.dataset.value || '' }, () => this.applyInventoryFilters()); },
+  clearInventoryFilters() { this.setData({ selectedQuantityLimit: 0, selectedLetter: '' }, () => this.applyInventoryFilters()); },
+  applyInventoryFilters() { this.setData({ inventory: filterInventory(this.data.allInventory, { maxQuantity: this.data.selectedQuantityLimit, letter: this.data.selectedLetter }) }); },
   toggleViewMode() { const viewMode = this.data.viewMode === 'detail' ? 'compact' : 'detail'; wx.setStorageSync(VIEW_MODE_KEY, viewMode); this.setData({ viewMode }); },
 
   async openItemEditor(event) {

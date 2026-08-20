@@ -36,4 +36,22 @@ function getReplenishmentItems(inventory) {
     .sort((left, right) => left.replenishment.priority - right.replenishment.priority || left.quantity - right.quantity || compareCodes(left.code, right.code));
 }
 
-module.exports = { SORT_OPTIONS, compareCodes, getReplenishmentLevel, sortInventory, getReplenishmentItems };
+function getCodeLetter(code) {
+  const match = String(code || '').trim().match(/^[A-Za-z]/);
+  return match ? match[0].toUpperCase() : '#';
+}
+
+function getAvailableLetters(inventory) {
+  return [...new Set(inventory.map((item) => getCodeLetter(item.code)))]
+    .sort((left, right) => left === '#' ? 1 : right === '#' ? -1 : left.localeCompare(right));
+}
+
+function filterInventory(inventory, { maxQuantity = 0, letter = '' } = {}) {
+  return inventory.filter((item) => {
+    if (maxQuantity > 0 && item.quantity > maxQuantity) return false;
+    if (letter && getCodeLetter(item.code) !== letter) return false;
+    return true;
+  });
+}
+
+module.exports = { SORT_OPTIONS, compareCodes, getReplenishmentLevel, sortInventory, getReplenishmentItems, getCodeLetter, getAvailableLetters, filterInventory };

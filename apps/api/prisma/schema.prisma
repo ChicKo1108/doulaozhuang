@@ -12,6 +12,7 @@ enum InventoryOperationType {
   ADD_COLOR
   SET_QUANTITY
   UNDO
+  PATTERN_CONSUMPTION
 }
 
 model User {
@@ -31,6 +32,7 @@ model Vault {
   user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   items     InventoryItem[]
   patterns  Pattern[]
+  patternConversions PatternConversion[]
 
   @@index([userId, updatedAt])
 }
@@ -72,7 +74,19 @@ model Pattern {
   id          String         @id @default(cuid())
   vaultId     String
   name        String
+  status      String         @default("UNSTARTED")
+  inventoryDeductedAt DateTime?
+  inventoryVaultId String?
   gridSize    Int
+  width       Int?
+  height      Int?
+  sourceType  String?
+  kitId       String?
+  mirrored    Boolean        @default(false)
+  cells       Json?
+  previewPath String?
+  constructionPath String?
+  algorithmVersion String?
   colorLimit  Int
   totalBeads  Int
   colorCount  Int
@@ -82,6 +96,34 @@ model Pattern {
   usages      PatternUsage[]
 
   @@index([vaultId, createdAt])
+}
+
+model PatternConversion {
+  id               String   @id @default(cuid())
+  vaultId          String
+  sourceType       String
+  status           String
+  sourcePath       String
+  previewPath      String?
+  constructionPath String?
+  analysis         Json
+  options          Json?
+  cells            Json?
+  usage            Json?
+  width             Int?
+  height            Int?
+  totalBeads        Int?
+  colorCount        Int?
+  algorithmVersion String?
+  errorCode         String?
+  expiresAt         DateTime
+  confirmedPatternId String? @unique
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  vault             Vault    @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+
+  @@index([vaultId, createdAt])
+  @@index([expiresAt])
 }
 
 model PatternUsage {

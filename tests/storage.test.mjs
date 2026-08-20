@@ -13,7 +13,7 @@ globalThis.wx = {
 
 const storage = require('../apps/miniprogram/utils/storage.js');
 const { createInventoryForKit } = require('../apps/miniprogram/utils/inventory-kit.js');
-const { getReplenishmentItems, sortInventory } = require('../apps/miniprogram/utils/inventory-view.js');
+const { filterInventory, getAvailableLetters, getReplenishmentItems, sortInventory } = require('../apps/miniprogram/utils/inventory-view.js');
 
 test('豆子库兼容旧库存数据并保存个人库', () => {
   records.set('doulaozhuang:inventory:v1', [{ code: 'A1', hex: '#FFFFFF', quantity: 1000 }]);
@@ -48,4 +48,49 @@ test('库存可按色号或余量排序，并识别建议和紧急补货', () =>
     getReplenishmentItems(inventory).map((item) => `${item.code}:${item.replenishment.id}`),
     ['A2:urgent', 'A10:suggested'],
   );
+});
+
+test('库存支持按数量上限和色号字母组合筛选', () => {
+  const inventory = [
+    { code: 'A1', quantity: 40 },
+    { code: 'A2', quantity: 180 },
+    { code: 'B1', quantity: 90 },
+    { code: 'M3', quantity: 1200 },
+    { code: '001', quantity: 20 },
+  ];
+  assert.deepEqual(getAvailableLetters(inventory), ['A', 'B', 'M', '#']);
+  assert.deepEqual(filterInventory(inventory, { maxQuantity: 100 }).map((item) => item.code), ['A1', 'B1', '001']);
+  assert.deepEqual(filterInventory(inventory, { maxQuantity: 200, letter: 'A' }).map((item) => item.code), ['A1', 'A2']);
+});
+
+test('豆仓页面默认使用紧凑布局并通过图标切换', async () => {
+  const [script, template] = await Promise.all([
+    import('node:fs/promises').then(({ readFile }) => readFile('apps/miniprogram/pages/inventory/index.js', 'utf8')),
+    import('node:fs/promises').then(({ readFile }) => readFile('apps/miniprogram/pages/inventory/index.wxml', 'utf8')),
+  ]);
+  assert.match(script, /viewMode: 'compact'/);
+  assert.match(script, /VIEW_MODE_KEY\) \|\| 'compact'/);
+  assert.match(template, /class="view-toggle"/);
+  assert.doesNotMatch(template, /class="mode-button"/);
+});
+
+test('豆仓三个筛选功能区均为单行横向滑动', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const template = await readFile('apps/miniprogram/pages/inventory/index.wxml', 'utf8');
+  assert.equal((template.match(/class="filter-row"/g) || []).length, 3);
+  assert.equal((template.match(/class="filter-scroll" scroll-x="true"/g) || []).length, 3);
+  assert.doesNotMatch(template, /class="sort-button-row"|class="filter-chip-row"|class="letter-scroll"/);
+});
+
+test('豆仓请求切换时显示加载动画并忽略过期结果', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const [script, template] = await Promise.all([
+    readFile('apps/miniprogram/pages/inventory/index.js', 'utf8'),
+    readFile('apps/miniprogram/pages/inventory/index.wxml', 'utf8'),
+  ]);
+  assert.match(script, /inventoryLoading: false/);
+  assert.match(script, /requestId !== this\._inventoryRequestId/);
+  assert.match(script, /inventoryLoading: true/);
+  assert.match(template, /class="inventory-loading"/);
+  assert.match(template, /庄豆豆正在整理豆仓/);
 });

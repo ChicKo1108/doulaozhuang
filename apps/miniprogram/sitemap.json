@@ -1,4 +1,9 @@
 {
   "desc": "豆老庄小程序页面配置",
-  "rules": []
+  "rules": [
+    {
+      "action": "allow",
+      "page": "*"
+    }
+  ]
 }

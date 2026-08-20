@@ -10,11 +10,12 @@
   "scripts": {
     "dev:api": "npm run start:dev --workspace=@doulaozhuang/api",
     "build:api": "npm run build --workspace=@doulaozhuang/api",
+    "build:engine": "npm run build --workspace=@doulaozhuang/pattern-engine",
     "start:api": "npm run start --workspace=@doulaozhuang/api",
     "sync:mard-palette": "node scripts/sync-mard-palette.mjs",
     "check:palette": "node scripts/check-mard-palette.mjs",
     "test:mvp": "node --test tests/*.test.mjs",
-    "test": "npm run test --workspace=@doulaozhuang/api && npm run test:mvp"
+    "test": "npm run test --workspace=@doulaozhuang/pattern-engine && npm run test --workspace=@doulaozhuang/api && npm run test:mvp"
   },
   "engines": {
     "node": ">=20"

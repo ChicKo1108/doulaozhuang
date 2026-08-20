@@ -92,7 +92,7 @@ export class InventoryService {
     return this.prisma.$transaction(async (tx) => {
       const operation = await tx.inventoryOperation.findFirst({ where: { id: operationId, item: { vaultId } }, include: { item: true, undoneBy: true } });
       if (!operation) throw new NotFoundException('操作记录不存在');
-      if (operation.undoneBy || operation.type === InventoryOperationType.UNDO) throw new UnprocessableEntityException('该操作已撤回或不可撤回');
+      if (operation.undoneBy || operation.type === InventoryOperationType.UNDO || operation.type === InventoryOperationType.PATTERN_CONSUMPTION) throw new UnprocessableEntityException('该操作已撤回或不可撤回');
       const targetQuantity = operation.item.quantity - operation.delta;
       if (targetQuantity < 0) throw new UnprocessableEntityException('撤回后库存不能小于 0');
       const item = await tx.inventoryItem.update({ where: { id: operation.itemId }, data: { quantity: targetQuantity } });

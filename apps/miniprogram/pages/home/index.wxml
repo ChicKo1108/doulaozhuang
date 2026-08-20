@@ -1,33 +1,29 @@
 <view class="page">
   <view wx:if="{{!isLoggedIn}}" class="empty-state"><view class="empty-illustration"><image src="/assets/icons/user-round.png" mode="aspectFit" /></view><text class="empty-title">请先登录</text><text class="empty-copy">登录后即可创建豆仓并保存你的拼豆图纸。</text><button class="primary-button" bindtap="retryLogin">微信登录</button><text wx:if="{{loginError}}" class="login-error">{{loginError}}</text></view>
   <block wx:else>
-  <view class="topbar">
-    <view>
-      <view class="brand-row"><view class="brand-mark">D</view><text class="eyebrow">豆老庄 · BEAD STUDIO</text></view>
-      <text class="title">我的图纸</text>
-      <text class="subtitle">已收藏 {{totalPatterns}} 张拼豆图纸</text>
-    </view>
-  </view>
+  <view class="manor-head"><view class="roof-beads"><view class="roof-bead"></view><view class="roof-bead"></view><view class="roof-bead"></view><view class="roof-bead"></view><view class="roof-bead"></view><view class="roof-bead"></view><view class="roof-bead"></view></view><view class="manor-copy"><view class="manor-kicker"><view class="manor-greeting-line"><text>我是</text><text class="manor-brand">豆老庄</text><text>的庄豆豆，</text></view><text>今天也一起拼豆吧~</text></view><text class="manor-note">图纸夹里收着 {{totalPatterns}} 个灵感</text><button class="manor-action" bindtap="goToPatterns">AI生图纸</button></view><image class="manor-character" src="/assets/design-system/zhuangdoudou-home-loop.gif" mode="aspectFit"/></view>
+
+  <view wx:if="{{totalPatterns}}" class="section-head"><view class="bead-flower"><view class="flower-bead"></view><view class="flower-bead"></view><view class="flower-bead"></view><view class="flower-bead"></view></view><text>我的图纸</text><text class="section-count">{{totalPatterns}} 张</text></view>
 
   <view wx:if="{{totalPatterns}}" class="waterfall">
     <view class="waterfall-column">
-      <view wx:for="{{leftPatterns}}" wx:key="id" class="pattern-card">
+      <view wx:for="{{leftPatterns}}" wx:key="id" class="pattern-card" data-id="{{item.id}}" bindtap="openPattern">
         <image wx:if="{{item.coverPath}}" class="pattern-cover" src="{{item.coverPath}}" mode="widthFix" />
-        <view wx:else class="pattern-placeholder">{{item.colorCount}} 色</view>
-        <view class="card-copy"><text class="pattern-name">{{item.name}}</text><text class="pattern-meta">Mard 221 · {{item.totalBeads}} 颗</text></view>
+        <view wx:else class="pattern-placeholder">等待庄豆豆补图</view>
+        <view class="card-copy"><text class="pattern-status">{{item.statusLabel}}</text><text class="pattern-name">{{item.name}}</text><text class="pattern-meta">{{item.width||item.gridSize}}×{{item.height||item.gridSize}} · {{item.totalBeads}} 颗</text></view>
       </view>
     </view>
     <view class="waterfall-column">
-      <view wx:for="{{rightPatterns}}" wx:key="id" class="pattern-card">
+      <view wx:for="{{rightPatterns}}" wx:key="id" class="pattern-card" data-id="{{item.id}}" bindtap="openPattern">
         <image wx:if="{{item.coverPath}}" class="pattern-cover" src="{{item.coverPath}}" mode="widthFix" />
-        <view wx:else class="pattern-placeholder">{{item.colorCount}} 色</view>
-        <view class="card-copy"><text class="pattern-name">{{item.name}}</text><text class="pattern-meta">Mard 221 · {{item.totalBeads}} 颗</text></view>
+        <view wx:else class="pattern-placeholder">等待庄豆豆补图</view>
+        <view class="card-copy"><text class="pattern-status">{{item.statusLabel}}</text><text class="pattern-name">{{item.name}}</text><text class="pattern-meta">{{item.width||item.gridSize}}×{{item.height||item.gridSize}} · {{item.totalBeads}} 颗</text></view>
       </view>
     </view>
   </view>
 
   <view wx:else class="empty-state">
-    <view class="empty-illustration"><image src="/assets/icons/sparkles.png" mode="aspectFit" /></view>
+    <view class="empty-illustration"><image src="/assets/design-system/zhuangdoudou-crafting.png" mode="aspectFit" /></view>
     <text class="empty-title">还没有图纸</text>
     <text class="empty-copy">上传一张图片，系统会自动生成 Mard 221 色拼豆图纸。</text>
     <button class="primary-button" bindtap="goToPatterns"><image src="/assets/icons/image-plus-white.png" mode="aspectFit" />创建第一张图纸</button>

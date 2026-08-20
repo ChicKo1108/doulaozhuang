@@ -3,7 +3,9 @@ dist/
 .env
 .env.*
 !.env.example
+!.env.production.example
 coverage/
+.pattern-storage/
 *.log
 
 # WeChat Mini Program local files

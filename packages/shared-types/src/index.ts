@@ -1,5 +1,70 @@
 export type PatternSourceType = 'source_image' | 'existing_pattern_image';
 
+export type PatternDetailPreset = 'clean' | 'balanced' | 'detail';
+export type PatternConversionStatus = 'ANALYZED' | 'CONVERTED' | 'CONFIRMED' | 'FAILED';
+export type PatternTargetWidth = 24 | 29 | 40 | 58 | 75;
+export type PatternConversionErrorCode =
+  | 'INVALID_IMAGE'
+  | 'IMAGE_TOO_LARGE'
+  | 'GRID_NOT_DETECTED'
+  | 'CONVERSION_TIMEOUT'
+  | 'INVALID_OPTIONS'
+  | 'INVALID_RESULT'
+  | 'CONVERSION_NOT_FOUND'
+  | 'ALREADY_CONFIRMED';
+
+export interface PatternSizeSuggestion {
+  width: PatternTargetWidth;
+  height: number;
+  recommended: boolean;
+  detailRetention: 'low' | 'medium' | 'high';
+}
+
+export interface PatternAnalyzeResult {
+  sourceType: PatternSourceType;
+  sourceWidth: number;
+  sourceHeight: number;
+  subjectRatio: number;
+  complexity: number;
+  pixelScale?: number;
+  gridConfidence?: number;
+  suggestions: PatternSizeSuggestion[];
+}
+
+export interface PatternConvertOptions {
+  targetWidth: PatternTargetWidth;
+  kitId: MardKitId;
+  preset?: PatternDetailPreset;
+  removeBackground?: boolean;
+  mirror?: boolean;
+}
+
+export interface PatternCell {
+  row: number;
+  column: number;
+  colorCode: string | null;
+  hex: string | null;
+}
+
+export interface PatternUsage {
+  code: string;
+  hex: string;
+  quantity: number;
+}
+
+export interface PatternConversionResult {
+  width: number;
+  height: number;
+  cells: PatternCell[];
+  usage: PatternUsage[];
+  totalBeads: number;
+  colorCount: number;
+  mirror: boolean;
+  algorithmVersion: string;
+  previewUrl?: string;
+  constructionUrl?: string;
+}
+
 export type PatternStatus = 'pending' | 'in_progress' | 'completed' | 'archived';
 
 export type MardKitId =

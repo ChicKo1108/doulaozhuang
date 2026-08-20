@@ -1,0 +1,2 @@
+ALTER TYPE "InventoryOperationType" ADD VALUE IF NOT EXISTS 'PATTERN_CONSUMPTION';
+ALTER TABLE "Pattern" ADD COLUMN "inventoryDeductedAt" TIMESTAMP(3), ADD COLUMN "inventoryVaultId" TEXT;
