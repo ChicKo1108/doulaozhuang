@@ -51,4 +51,11 @@ for (const target of targets) {
   await writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`);
 }
 
-console.log(`已同步 Mard 221 色母色卡至 ${targets.length} 个目标文件。`);
+const miniProgramModulePath = resolve('apps/miniprogram/data/mard-221.js');
+await mkdir(resolve(miniProgramModulePath, '..'), { recursive: true });
+await writeFile(
+  miniProgramModulePath,
+  `// 此文件由 scripts/sync-mard-palette.mjs 自动生成，请勿手动编辑。\nmodule.exports = ${JSON.stringify(payload, null, 2)};\n`,
+);
+
+console.log(`已同步 Mard 221 色母色卡至 ${targets.length} 个 JSON 文件和小程序模块。`);

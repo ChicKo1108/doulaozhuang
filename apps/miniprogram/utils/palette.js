@@ -1,4 +1,4 @@
-const paletteFile = require('../data/mard-221.json');
+const paletteFile = require('../data/mard-221');
 
 const palette = paletteFile.colors.map((color) => ({
   ...color,
