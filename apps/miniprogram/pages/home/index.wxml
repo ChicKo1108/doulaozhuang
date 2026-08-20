@@ -1,11 +1,12 @@
 <view class="page">
+  <view wx:if="{{!isLoggedIn}}" class="empty-state"><view class="empty-illustration"><image src="/assets/icons/user-round.png" mode="aspectFit" /></view><text class="empty-title">请先登录</text><text class="empty-copy">登录后即可创建豆仓并保存你的拼豆图纸。</text><button class="primary-button" bindtap="retryLogin">微信登录</button><text wx:if="{{loginError}}" class="login-error">{{loginError}}</text></view>
+  <block wx:else>
   <view class="topbar">
     <view>
-      <text class="eyebrow">豆老庄</text>
+      <view class="brand-row"><view class="brand-mark">D</view><text class="eyebrow">豆老庄 · BEAD STUDIO</text></view>
       <text class="title">我的图纸</text>
       <text class="subtitle">已收藏 {{totalPatterns}} 张拼豆图纸</text>
     </view>
-    <button class="add-button" bindtap="goToPatterns">＋</button>
   </view>
 
   <view wx:if="{{totalPatterns}}" class="waterfall">
@@ -13,28 +14,23 @@
       <view wx:for="{{leftPatterns}}" wx:key="id" class="pattern-card">
         <image wx:if="{{item.coverPath}}" class="pattern-cover" src="{{item.coverPath}}" mode="widthFix" />
         <view wx:else class="pattern-placeholder">{{item.colorCount}} 色</view>
-        <view class="card-copy">
-          <text class="pattern-name">{{item.name}}</text>
-          <text class="pattern-meta">Mard 221 · {{item.totalBeads}} 颗</text>
-        </view>
+        <view class="card-copy"><text class="pattern-name">{{item.name}}</text><text class="pattern-meta">Mard 221 · {{item.totalBeads}} 颗</text></view>
       </view>
     </view>
     <view class="waterfall-column">
       <view wx:for="{{rightPatterns}}" wx:key="id" class="pattern-card">
         <image wx:if="{{item.coverPath}}" class="pattern-cover" src="{{item.coverPath}}" mode="widthFix" />
         <view wx:else class="pattern-placeholder">{{item.colorCount}} 色</view>
-        <view class="card-copy">
-          <text class="pattern-name">{{item.name}}</text>
-          <text class="pattern-meta">Mard 221 · {{item.totalBeads}} 颗</text>
-        </view>
+        <view class="card-copy"><text class="pattern-name">{{item.name}}</text><text class="pattern-meta">Mard 221 · {{item.totalBeads}} 颗</text></view>
       </view>
     </view>
   </view>
 
   <view wx:else class="empty-state">
-    <view class="empty-illustration">⌘</view>
+    <view class="empty-illustration"><image src="/assets/icons/sparkles.png" mode="aspectFit" /></view>
     <text class="empty-title">还没有图纸</text>
-    <text class="empty-copy">去图纸库上传一张图片，系统会自动生成 Mard 221 色拼豆图纸。</text>
-    <button class="primary-button" bindtap="goToPatterns">去创建第一张图纸</button>
+    <text class="empty-copy">上传一张图片，系统会自动生成 Mard 221 色拼豆图纸。</text>
+    <button class="primary-button" bindtap="goToPatterns"><image src="/assets/icons/image-plus-white.png" mode="aspectFit" />创建第一张图纸</button>
   </view>
+  </block>
 </view>

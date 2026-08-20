@@ -1,61 +1,20 @@
 <view class="page">
-  <view wx:if="{{!vault}}" class="create-state">
-    <view class="vault-icon">▦</view>
-    <text class="title">创建我的豆子库</text>
-    <text class="copy">记录你拥有的拼豆。创建后可持续添加不同品牌、色卡和色号。</text>
-    <button class="primary-button" bindtap="beginCreate">创建豆子库</button>
-  </view>
+  <view wx:if="{{!isLoggedIn}}" class="create-state"><view class="vault-icon"><image src="/assets/icons/user-round.png" mode="aspectFit" /></view><text class="eyebrow">云端豆仓</text><text class="title">请先登录</text><text class="copy">登录后即可创建豆仓、保存图纸并同步库存。</text><button class="primary-button" bindtap="retryLogin">微信登录</button><text wx:if="{{loginError}}" class="login-error">{{loginError}}</text></view>
+
+  <view wx:elif="{{!activeVault}}" class="create-state"><view class="vault-icon"><image src="/assets/icons/package-open.png" mode="aspectFit" /></view><text class="eyebrow">云端豆仓</text><text class="title">创建第一个豆仓</text><text class="copy">为家里、学校或门店建立独立库存。</text><button class="primary-button" bindtap="openCreateVault">创建豆仓</button></view>
 
   <view wx:else>
-    <view class="header-card">
-      <text class="eyebrow">个人库存</text>
-      <text class="title">{{vault.name}}</text>
-      <text class="copy">已收录 {{inventory.length}} 种拼豆颜色</text>
-      <button class="add-button" bindtap="beginCreate">添加豆子</button>
-    </view>
-
-    <view class="inventory-list">
-      <view wx:for="{{inventory}}" wx:key="id" class="inventory-item">
-        <view class="color-dot" style="background-color: {{item.hex}};"></view>
-        <view class="item-copy">
-          <text class="code">{{item.code}}</text>
-          <text class="meta">{{item.brand}} · {{item.paletteName}}</text>
-        </view>
-        <text class="quantity">{{item.quantity}} 颗</text>
-      </view>
-    </view>
+    <view class="page-heading"><text class="eyebrow">个人库存</text><view class="vault-select" bindtap="openVaultPanel"><text class="title">{{activeVault.name}}</text><image src="/assets/icons/chevron-down.png" mode="aspectFit" /></view><text class="copy">已收录 {{inventory.length}} 种拼豆颜色</text></view>
+    <view class="replenishment-section"><view class="section-heading"><view><text class="section-title">待补充豆子</text><text class="section-copy">低于 500 颗建议补充，低于 100 颗急需补充</text></view><text class="replenishment-count">{{replenishmentItems.length}}</text></view><view wx:if="{{replenishmentItems.length}}" class="replenishment-list"><view wx:for="{{replenishmentItems}}" wx:key="id" class="replenishment-item"><view class="replenishment-dot" style="background-color: {{item.hex}};"></view><text class="replenishment-code">{{item.code}}</text><text class="replenishment-quantity">{{item.quantity}} 颗</text><text class="replenishment-status {{item.replenishment.id}}">{{item.replenishment.label}}</text></view></view><view wx:else class="replenishment-empty"><text>库存状态良好，暂时无需补充</text></view></view>
+    <view class="inventory-toolbar"><text class="section-title">全部颜色</text><view class="toolbar-actions"><picker range="{{sortOptions}}" value="{{selectedSortIndex}}" bindchange="onSortChange"><view class="sort-picker"><text>{{sortOptions[selectedSortIndex]}}</text><image src="/assets/icons/chevron-down.png" mode="aspectFit" /></view></picker><button class="mode-button" bindtap="toggleViewMode">{{viewMode === 'detail' ? '紧凑' : '详细'}}</button></view></view>
+    <view class="inventory-grid {{viewMode === 'compact' ? 'inventory-grid-compact' : ''}}"><view wx:for="{{inventory}}" wx:key="id" class="inventory-card" data-item="{{item}}" bindtap="openItemEditor"><view class="color-swatch" style="background-color: {{item.hex}};"></view><view class="inventory-detail"><text class="code">{{item.code}}</text><text class="meta">{{item.brand}} · {{item.paletteName}}</text><view class="quantity-row"><text class="quantity-label">剩余数量</text><text class="quantity">{{item.quantity}} 颗</text></view></view></view></view>
   </view>
 
-  <view wx:if="{{showEditor}}" class="editor-mask">
-    <view class="editor-card">
-      <view class="editor-title-row">
-        <text class="editor-title">{{vault ? '添加豆子' : '创建豆子库'}}</text>
-        <text class="close" bindtap="closeEditor">×</text>
-      </view>
+  <view wx:if="{{showVaultPanel}}" class="editor-mask"><view class="sheet-card vault-sheet"><view class="editor-title-row"><view><text class="editor-title">切换豆仓</text><text class="editor-note">家庭、学校和门店库存彼此独立</text></view><image class="close" src="/assets/icons/x.png" mode="aspectFit" bindtap="closeVaultPanel" /></view><view class="vault-list"><view wx:for="{{vaults}}" wx:key="id" class="vault-row {{activeVault.id === item.id ? 'vault-active' : ''}}" data-id="{{item.id}}" bindtap="selectVault"><view><text class="vault-name">{{item.name}}</text><text class="vault-meta">{{item._count.items}} 种颜色 · {{item._count.patterns}} 张图纸</text></view><text wx:if="{{activeVault.id === item.id}}" class="vault-current">当前</text></view></view><button class="outline-button" bindtap="openCreateVault">新建豆仓</button><view class="vault-management"><text bindtap="openRenameVault">重命名当前豆仓</text><text class="danger-link" bindtap="deleteCurrentVault">删除当前豆仓</text><text bindtap="openAddColor">新增颜色</text></view></view></view>
 
-      <text class="label">品牌</text>
-      <picker range="{{brands}}" value="{{selectedBrandIndex}}" bindchange="onBrandChange">
-        <view class="picker-value">{{brands[selectedBrandIndex]}} <text>⌄</text></view>
-      </picker>
+  <view wx:if="{{showVaultEditor}}" class="editor-mask"><view class="sheet-card"><view class="editor-title-row"><view><text class="editor-title">{{vaultEditorMode === 'create' ? '新建豆仓' : '重命名豆仓'}}</text><text class="editor-note">{{vaultEditorMode === 'create' ? '创建后将自动生成标准颜色库存' : '更新当前豆仓名称'}}</text></view><image class="close" src="/assets/icons/x.png" mode="aspectFit" bindtap="closeVaultEditor" /></view><text class="label">豆仓名称</text><input class="text-input" placeholder="例如：家里的拼豆" value="{{vaultName}}" bindinput="onVaultNameInput" /><block wx:if="{{vaultEditorMode === 'create'}}"><text class="label">颜色套装</text><picker range="{{paletteOptions}}" value="{{selectedPaletteIndex}}" bindchange="onPaletteChange"><view class="picker-value">Mard {{paletteOptions[selectedPaletteIndex]}}<image src="/assets/icons/chevron-down.png" mode="aspectFit" /></view></picker><text class="label">每种颜色数量</text><input class="text-input" type="number" value="{{quantity}}" bindinput="onQuantityInput" /></block><button class="primary-button editor-action" bindtap="saveVault">保存</button></view></view>
 
-      <text class="label">色卡</text>
-      <picker range="{{paletteOptions}}" value="{{selectedPaletteIndex}}" bindchange="onPaletteChange">
-        <view class="picker-value">{{paletteOptions[selectedPaletteIndex]}} <text>⌄</text></view>
-      </picker>
+  <view wx:if="{{showItemEditor}}" class="editor-mask"><view class="sheet-card item-sheet"><view class="editor-title-row"><view><text class="editor-title">编辑库存</text><text class="editor-note">每次变更都会保留操作记录</text></view><image class="close" src="/assets/icons/x.png" mode="aspectFit" bindtap="closeItemEditor" /></view><view class="item-summary"><view class="item-swatch" style="background-color: {{selectedItem.hex}};"></view><view><text class="item-code">{{selectedItem.code}}</text><text class="editor-note">{{selectedItem.brand}} · {{selectedItem.paletteName}}</text></view></view><text class="label">剩余数量</text><view class="quantity-editor"><button data-delta="-100" bindtap="changeItemQuantity">−100</button><input type="number" value="{{itemQuantity}}" bindinput="onItemQuantityInput" /><button data-delta="100" bindtap="changeItemQuantity">+100</button></view><button class="primary-button editor-action" bindtap="saveItemQuantity">保存数量</button><view class="history-heading"><text class="section-title">操作记录</text><text class="editor-note">最近 20 条</text></view><view class="operation-list"><view wx:for="{{operations}}" wx:key="id" class="operation-row"><view><text class="operation-change">{{item.before}} → {{item.after}}（{{item.delta > 0 ? '+' : ''}}{{item.delta}}）</text><text class="operation-time">{{item.timeText}}</text></view><button wx:if="{{item.canUndo}}" class="undo-button" data-id="{{item.id}}" bindtap="undoOperation">撤回</button><text wx:else class="undone-text">已撤回</text></view></view></view></view>
 
-      <text class="label">色号</text>
-      <picker wx:if="{{isMard}}" range="{{colorOptions}}" value="{{selectedColorIndex}}" bindchange="onColorChange">
-        <view class="picker-value">{{colorOptions[selectedColorIndex]}} <text>⌄</text></view>
-      </picker>
-      <input wx:else class="text-input" placeholder="输入色号，例如 001" value="{{customCode}}" bindinput="onCustomCodeInput" />
-
-      <text class="label">数量</text>
-      <input class="text-input" type="number" value="{{quantity}}" bindinput="onQuantityInput" />
-      <view class="quick-quantities">
-        <text wx:for="{{quickQuantities}}" wx:key="*this" class="quick-item {{quantity === item ? 'active-quick' : ''}}" data-quantity="{{item}}" bindtap="selectQuickQuantity">{{item}}</text>
-      </view>
-
-      <button class="primary-button" bindtap="saveBean">{{vault ? '加入豆子库' : '创建并加入第一种豆子'}}</button>
-    </view>
-  </view>
+  <view wx:if="{{showAddColor}}" class="editor-mask"><view class="sheet-card"><view class="editor-title-row"><view><text class="editor-title">新增颜色</text><text class="editor-note">将颜色加入当前豆仓</text></view><image class="close" src="/assets/icons/x.png" mode="aspectFit" bindtap="closeAddColor" /></view><text class="label">品牌</text><picker range="{{brands}}" value="{{selectedBrandIndex}}" bindchange="onBrandChange"><view class="picker-value">{{brands[selectedBrandIndex]}}<image src="/assets/icons/chevron-down.png" mode="aspectFit" /></view></picker><text class="label">色卡</text><picker range="{{paletteOptions}}" value="{{selectedPaletteIndex}}" bindchange="onPaletteChange"><view class="picker-value">{{paletteOptions[selectedPaletteIndex]}}<image src="/assets/icons/chevron-down.png" mode="aspectFit" /></view></picker><text class="label">色号</text><picker wx:if="{{isMard}}" range="{{colorOptions}}" value="{{selectedColorIndex}}" bindchange="onColorChange"><view class="picker-value">{{colorOptions[selectedColorIndex]}}<image src="/assets/icons/chevron-down.png" mode="aspectFit" /></view></picker><input wx:else class="text-input" placeholder="输入色号，例如 001" value="{{customCode}}" bindinput="onCustomCodeInput" /><text class="label">数量</text><input class="text-input" type="number" value="{{quantity}}" bindinput="onQuantityInput" /><button class="primary-button editor-action" bindtap="saveNewColor">加入豆仓</button></view></view>
 </view>

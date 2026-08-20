@@ -1,34 +1,21 @@
-const { getPatterns } = require('../../utils/storage');
+const api = require('../../utils/cloud-api');
 
-function splitWaterfall(patterns) {
-  return patterns.reduce(
-    (columns, pattern, index) => {
-      columns[index % 2].push(pattern);
-      return columns;
-    },
-    [[], []],
-  );
-}
+function splitWaterfall(patterns) { return patterns.reduce((columns, pattern, index) => { columns[index % 2].push(pattern); return columns; }, [[], []]); }
 
 Page({
-  data: {
-    leftPatterns: [],
-    rightPatterns: [],
-    totalPatterns: 0,
+  data: { isLoggedIn: false, loginError: '', leftPatterns: [], rightPatterns: [], totalPatterns: 0 },
+  async onShow() {
+    const app = getApp(); const isLoggedIn = await app.login(); this.setData({ isLoggedIn, loginError: app.globalData.loginError });
+    if (!isLoggedIn) return;
+    try {
+      const vaults = await api.listVaults(); const vaultId = app.globalData.activeVaultId || (vaults[0] && vaults[0].id);
+      if (!vaultId) return this.setData({ leftPatterns: [], rightPatterns: [], totalPatterns: 0 });
+      app.globalData.activeVaultId = vaultId;
+      const patterns = await api.getPatterns(vaultId); const [leftPatterns, rightPatterns] = splitWaterfall(patterns);
+      this.setData({ leftPatterns, rightPatterns, totalPatterns: patterns.length });
+    } catch (error) { wx.showToast({ title: error.message || '读取图纸失败', icon: 'none' }); }
   },
-
-  onShow() {
-    const patterns = getPatterns();
-    const [leftPatterns, rightPatterns] = splitWaterfall(patterns);
-    this.setData({ leftPatterns, rightPatterns, totalPatterns: patterns.length });
-  },
-
-  onPullDownRefresh() {
-    this.onShow();
-    wx.stopPullDownRefresh();
-  },
-
-  goToPatterns() {
-    wx.switchTab({ url: '/pages/patterns/index' });
-  },
+  onPullDownRefresh() { this.onShow().finally(() => wx.stopPullDownRefresh()); },
+  retryLogin() { this.onShow(); },
+  goToPatterns() { wx.switchTab({ url: '/pages/patterns/index' }); },
 });

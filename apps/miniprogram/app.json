@@ -7,31 +7,39 @@
   ],
   "window": {
     "navigationBarTitleText": "豆老庄",
-    "navigationBarBackgroundColor": "#FFF9F0",
+    "navigationBarBackgroundColor": "#F7F9FC",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#FFF9F0"
+    "backgroundColor": "#F7F9FC"
   },
   "tabBar": {
-    "color": "#897d73",
-    "selectedColor": "#694c3a",
-    "backgroundColor": "#fffdf9",
-    "borderStyle": "white",
+    "color": "#64748B",
+    "selectedColor": "#3557D6",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
     "list": [
       {
         "pagePath": "pages/home/index",
-        "text": "首页"
+        "text": "首页",
+        "iconPath": "assets/icons/tab-house.png",
+        "selectedIconPath": "assets/icons/tab-house-active.png"
       },
       {
         "pagePath": "pages/patterns/index",
-        "text": "图纸库"
+        "text": "图纸库",
+        "iconPath": "assets/icons/tab-images.png",
+        "selectedIconPath": "assets/icons/tab-images-active.png"
       },
       {
         "pagePath": "pages/inventory/index",
-        "text": "豆子库"
+        "text": "豆子库",
+        "iconPath": "assets/icons/tab-package-open.png",
+        "selectedIconPath": "assets/icons/tab-package-open-active.png"
       },
       {
         "pagePath": "pages/profile/index",
-        "text": "个人中心"
+        "text": "个人中心",
+        "iconPath": "assets/icons/tab-user-round.png",
+        "selectedIconPath": "assets/icons/tab-user-round-active.png"
       }
     ]
   },

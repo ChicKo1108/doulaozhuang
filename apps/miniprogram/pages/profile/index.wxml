@@ -1,9 +1,4 @@
 <view class="page">
-  <view class="profile-card">
-    <view class="avatar">豆</view>
-    <view><text class="title">我的豆老庄</text><text class="copy">本地拼豆管理空间</text></view>
-  </view>
-  <view class="stats-card"><view><text class="stat-number">{{patternCount}}</text><text class="stat-label">图纸</text></view><view><text class="stat-number">{{inventoryCount}}</text><text class="stat-label">豆子颜色</text></view></view>
-  <view class="setting-card"><text class="setting-label">当前豆子库</text><text class="setting-value">{{vaultName}}</text></view>
-  <button class="clear-button" bindtap="clearData">清除本地测试数据</button>
+  <view wx:if="{{!isLoggedIn}}" class="profile-card"><view class="avatar"><image src="/assets/icons/user-round.png" mode="aspectFit" /></view><view><text class="eyebrow">云端账户</text><text class="title">请先登录</text><text class="copy">登录后可访问你的豆仓和图纸。</text></view></view>
+  <block wx:else><view class="profile-card"><view class="avatar"><image src="/assets/icons/user-round.png" mode="aspectFit" /></view><view><text class="eyebrow">云端账户</text><text class="title">我的豆老庄</text><text class="copy">微信账号已登录</text></view></view><view class="stats-card"><view class="stat"><text class="stat-number">{{patternCount}}</text><text class="stat-label">图纸</text></view><view class="divider"></view><view class="stat"><text class="stat-number">{{inventoryCount}}</text><text class="stat-label">豆子颜色</text></view></view><view class="setting-card"><view class="setting-icon"><image src="/assets/icons/settings.png" mode="aspectFit" /></view><view><text class="setting-label">当前豆仓 · 共 {{vaultCount}} 个</text><text class="setting-value">{{vaultName}}</text></view></view><button class="clear-button" bindtap="logout">退出登录</button></block>
 </view>

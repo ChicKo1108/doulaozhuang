@@ -15,10 +15,14 @@
 ```bash
 npm install
 cp .env.example .env
+npm run prisma:generate --workspace=@doulaozhuang/api
+npm run prisma:migrate --workspace=@doulaozhuang/api
 npm run dev:api
 ```
 
 在微信开发者工具中导入 `apps/miniprogram`，并将开发环境 API 地址配置为本地可访问的地址。
+
+云端豆仓需要在 `.env` 中配置 PostgreSQL 的 `DATABASE_URL`、随机 `JWT_SECRET`，以及微信小程序的 `WECHAT_APP_ID`、`WECHAT_APP_SECRET`。小程序通过 `wx.login` 登录；正式发布前还需在微信公众平台配置 API 的合法请求域名。
 
 ## MVP 已实现能力
 

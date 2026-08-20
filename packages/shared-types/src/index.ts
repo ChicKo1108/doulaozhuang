@@ -29,3 +29,53 @@ export interface MardColorKit {
   selectionMode: 'dominant-image-colors' | 'full-palette';
   isDefault: boolean;
 }
+
+export type InventorySort = 'code_asc' | 'code_desc' | 'quantity_asc' | 'quantity_desc';
+
+export type ReplenishmentLevel = 'urgent' | 'suggested';
+
+export interface InventoryItem {
+  id?: string;
+  brand: string;
+  paletteName: string;
+  code: string;
+  hex: string;
+  quantity: number;
+}
+
+export interface InventoryReplenishmentItem extends InventoryItem {
+  replenishment: { id: ReplenishmentLevel; label: '急需补充' | '建议补充' };
+}
+
+export interface InventoryOverview {
+  items: InventoryItem[];
+  sort: InventorySort;
+  replenishment: {
+    total: number;
+    urgentCount: number;
+    suggestedCount: number;
+    items: InventoryReplenishmentItem[];
+  };
+}
+
+export interface VaultSummary {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  itemCount: number;
+  patternCount: number;
+}
+
+export type InventoryOperationType = 'INITIALIZE' | 'ADD_COLOR' | 'SET_QUANTITY' | 'UNDO';
+
+export interface InventoryOperation {
+  id: string;
+  itemId: string;
+  type: InventoryOperationType;
+  before: number;
+  after: number;
+  delta: number;
+  undoOfId?: string;
+  createdAt: string;
+}

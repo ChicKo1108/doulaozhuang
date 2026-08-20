@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum InventoryOperationType {
+  INITIALIZE
+  ADD_COLOR
+  SET_QUANTITY
+  UNDO
+}
+
+model User {
+  id           String    @id @default(cuid())
+  wechatOpenId String    @unique
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  vaults       Vault[]
+}
+
+model Vault {
+  id        String          @id @default(cuid())
+  userId    String
+  name      String
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     InventoryItem[]
+  patterns  Pattern[]
+
+  @@index([userId, updatedAt])
+}
+
+model InventoryItem {
+  id          String               @id @default(cuid())
+  vaultId     String
+  brand       String
+  paletteName String
+  code        String
+  hex         String
+  quantity    Int                  @default(0)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  vault       Vault                @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+  operations  InventoryOperation[]
+
+  @@unique([vaultId, brand, paletteName, code])
+  @@index([vaultId, code])
+}
+
+model InventoryOperation {
+  id         String                 @id @default(cuid())
+  itemId     String
+  type       InventoryOperationType
+  before     Int
+  after      Int
+  delta      Int
+  undoOfId   String?                @unique
+  createdAt  DateTime               @default(now())
+  item       InventoryItem          @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  undoOf     InventoryOperation?    @relation("OperationUndo", fields: [undoOfId], references: [id])
+  undoneBy   InventoryOperation?    @relation("OperationUndo")
+
+  @@index([itemId, createdAt])
+}
+
+model Pattern {
+  id          String         @id @default(cuid())
+  vaultId     String
+  name        String
+  gridSize    Int
+  colorLimit  Int
+  totalBeads  Int
+  colorCount  Int
+  sourcePath  String?
+  createdAt   DateTime       @default(now())
+  vault       Vault          @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+  usages      PatternUsage[]
+
+  @@index([vaultId, createdAt])
+}
+
+model PatternUsage {
+  id        String  @id @default(cuid())
+  patternId String
+  code      String
+  quantity  Int
+  pattern   Pattern @relation(fields: [patternId], references: [id], onDelete: Cascade)
+
+  @@unique([patternId, code])
+}

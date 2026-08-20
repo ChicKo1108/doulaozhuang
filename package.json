@@ -18,5 +18,8 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "lucide-static": "^1.33.0"
   }
 }
