@@ -26,6 +26,6 @@ export interface MardColorKit {
   id: MardKitId;
   name: string;
   colorCount: 24 | 48 | 72 | 96 | 120 | 221;
-  colorCodes: string[];
+  selectionMode: 'dominant-image-colors' | 'full-palette';
   isDefault: boolean;
 }

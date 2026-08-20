@@ -1,12 +1,111 @@
 <view class="page">
   <view class="hero">
     <text class="eyebrow">拼豆管理工具</text>
-    <text class="title">{{title}}</text>
-    <text class="subtitle">{{subtitle}}</text>
+    <text class="title">豆老庄</text>
+    <text class="subtitle">上传一张图，算清每一颗豆子。</text>
   </view>
 
-  <view class="notice">
-    <text class="notice-title">项目初始化完成</text>
-    <text class="notice-copy">支持 24、48、72、96、120、221 色套装，默认使用 221 色。</text>
+  <view class="card converter-card">
+    <view class="section-heading">
+      <text class="section-title">图片转图纸</text>
+      <text class="section-caption">本地处理，不上传图片</text>
+    </view>
+
+    <view class="settings-row">
+      <view class="setting">
+        <text class="setting-label">用色档位</text>
+        <picker range="{{colorLimits}}" value="{{selectedColorLimitIndex}}" bindchange="onColorLimitChange">
+          <view class="picker-value">{{selectedColorLimit}} 色 <text class="chevron">⌄</text></view>
+        </picker>
+      </view>
+      <view class="setting">
+        <text class="setting-label">图纸格数</text>
+        <picker range="{{gridSizes}}" value="{{selectedGridSizeIndex}}" bindchange="onGridSizeChange">
+          <view class="picker-value">{{gridSize}} × {{gridSize}} <text class="chevron">⌄</text></view>
+        </picker>
+      </view>
+    </view>
+
+    <button class="primary-button" bindtap="chooseImage" loading="{{isConverting}}">
+      {{sourcePath ? '更换图片并重新转换' : '选择图片开始转图'}}
+    </button>
+
+    <image wx:if="{{sourcePath}}" class="source-image" src="{{sourcePath}}" mode="aspectFill" />
+    <canvas type="2d" id="conversionCanvas" class="conversion-canvas"></canvas>
+  </view>
+
+  <view wx:if="{{cells.length}}" class="card result-card">
+    <view class="section-heading">
+      <view>
+        <text class="section-title">转换结果</text>
+        <text class="section-caption">{{gridSize}} × {{gridSize}} 格 · {{actualColorCount}} 色 · {{totalBeads}} 颗</text>
+      </view>
+      <button class="text-button" bindtap="saveCurrentPattern">保存图纸</button>
+    </view>
+
+    <view class="pattern-grid" style="grid-template-columns: repeat({{gridSize}}, minmax(0, 1fr));">
+      <view wx:for="{{cells}}" wx:key="index" class="pattern-cell" style="background-color: {{item.hex}};"></view>
+    </view>
+  </view>
+
+  <view wx:if="{{usageItems.length}}" class="card usage-card">
+    <view class="section-heading">
+      <view>
+        <text class="section-title">用豆与缺口</text>
+        <text class="section-caption">红色数字表示目前库存不足</text>
+      </view>
+    </view>
+
+    <view class="usage-list">
+      <view wx:for="{{usageItems}}" wx:key="code" class="usage-item">
+        <view class="color-dot" style="background-color: {{item.hex}};"></view>
+        <text class="usage-code">{{item.code}}</text>
+        <text class="usage-quantity">需 {{item.quantity}} 颗</text>
+        <text class="usage-stock">库存 {{item.stock}}</text>
+        <text wx:if="{{item.shortage}}" class="usage-shortage">缺 {{item.shortage}}</text>
+      </view>
+    </view>
+
+    <view class="stock-editor">
+      <picker class="stock-picker" range="{{inventoryColorOptions}}" value="{{selectedInventoryColorIndex}}" bindchange="onInventoryColorChange">
+        <view class="picker-value">{{inventoryColorOptions[selectedInventoryColorIndex] || '选择图纸颜色'}} <text class="chevron">⌄</text></view>
+      </picker>
+      <input class="stock-input" type="number" placeholder="入库数量" value="{{stockInput}}" bindinput="onStockInput" />
+      <button class="stock-button" bindtap="addStock">入库</button>
+    </view>
+  </view>
+
+  <view class="card inventory-card">
+    <view class="section-heading">
+      <view>
+        <text class="section-title">我的豆子库</text>
+        <text class="section-caption">{{inventory.length}} 种颜色</text>
+      </view>
+      <button wx:if="{{inventory.length}}" class="text-button danger-button" bindtap="clearInventory">清空</button>
+    </view>
+    <view wx:if="{{inventory.length}}" class="inventory-list">
+      <view wx:for="{{inventory}}" wx:key="code" class="inventory-item">
+        <view class="color-dot" style="background-color: {{item.hex}};"></view>
+        <text class="usage-code">{{item.code}}</text>
+        <text class="inventory-quantity">{{item.quantity}} 颗</text>
+      </view>
+    </view>
+    <text wx:else class="empty-copy">先转一张图，然后把需要的颜色加入豆子库。</text>
+  </view>
+
+  <view class="card saved-card">
+    <view class="section-heading">
+      <view>
+        <text class="section-title">已保存图纸</text>
+        <text class="section-caption">本机最多保存 20 张</text>
+      </view>
+    </view>
+    <view wx:if="{{savedPatterns.length}}" class="saved-list">
+      <view wx:for="{{savedPatterns}}" wx:key="id" class="saved-item">
+        <text class="saved-name">{{item.name}}</text>
+        <text class="saved-meta">{{item.gridSize}} × {{item.gridSize}} · {{item.colorCount}} 色 · {{item.totalBeads}} 颗</text>
+      </view>
+    </view>
+    <text wx:else class="empty-copy">保存转换结果后，会在这里留下制作记录。</text>
   </view>
 </view>

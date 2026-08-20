@@ -28,7 +28,10 @@ export class MardPaletteController {
       kits.kits.length === expectedCounts.length &&
       expectedCounts.every((count) =>
         kits.kits.some(
-          (kit) => kit.colorCount === count && kit.colorCodes.length === count,
+          (kit) =>
+            kit.colorCount === count &&
+            kit.selectionMode ===
+              (count === 221 ? 'full-palette' : 'dominant-image-colors'),
         ),
       );
 

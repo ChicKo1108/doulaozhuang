@@ -37,13 +37,9 @@ if (
 
 for (const colorCount of expectedCounts) {
   const kit = standardKits.kits.find((item) => item.colorCount === colorCount);
-  if (!kit || kit.colorCodes.length !== colorCount) {
-    throw new Error(`Mard ${colorCount} 色套装缺少准确的色号清单`);
-  }
-  for (const code of kit.colorCodes) {
-    if (!codes.has(code)) {
-      throw new Error(`Mard ${colorCount} 色套装包含母色卡外色号：${code}`);
-    }
+  const expectedMode = colorCount === 221 ? 'full-palette' : 'dominant-image-colors';
+  if (!kit || kit.selectionMode !== expectedMode) {
+    throw new Error(`Mard ${colorCount} 色档位配置无效`);
   }
 }
 

@@ -18,7 +18,7 @@ export interface MardColorKit {
   id: string;
   name: string;
   colorCount: number;
-  colorCodes: string[];
+  selectionMode: 'dominant-image-colors' | 'full-palette';
 }
 
 export interface StandardKits {
