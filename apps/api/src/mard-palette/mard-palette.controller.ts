@@ -18,4 +18,27 @@ export class MardPaletteController {
 
     return palette;
   }
+
+  @Get('kits')
+  getStandardKits() {
+    const kits = this.paletteService.getStandardKits();
+    const expectedCounts = [24, 48, 72, 96, 120, 221];
+    const isReady =
+      kits.defaultKitId === 'mard-221' &&
+      kits.kits.length === expectedCounts.length &&
+      expectedCounts.every((count) =>
+        kits.kits.some(
+          (kit) => kit.colorCount === count && kit.colorCodes.length === count,
+        ),
+      );
+
+    if (!isReady) {
+      throw new ServiceUnavailableException({
+        code: 'MARD_STANDARD_KITS_NOT_READY',
+        message: 'Mard 标准套装色号清单尚未导入，暂不可使用。',
+      });
+    }
+
+    return kits;
+  }
 }

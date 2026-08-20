@@ -7,6 +7,6 @@
 
   <view class="notice">
     <text class="notice-title">项目初始化完成</text>
-    <text class="notice-copy">下一步将导入 Mard 221 色卡，并接入库存管理。</text>
+    <text class="notice-copy">支持 24、48、72、96、120、221 色套装，默认使用 221 色。</text>
   </view>
 </view>

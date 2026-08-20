@@ -1,0 +1,12 @@
+{
+  "paletteVersion": "mard-221",
+  "defaultKitId": "mard-221",
+  "kits": [
+    { "id": "mard-24", "name": "Mard 24 色套装", "colorCount": 24, "colorCodes": [] },
+    { "id": "mard-48", "name": "Mard 48 色套装", "colorCount": 48, "colorCodes": [] },
+    { "id": "mard-72", "name": "Mard 72 色套装", "colorCount": 72, "colorCodes": [] },
+    { "id": "mard-96", "name": "Mard 96 色套装", "colorCount": 96, "colorCodes": [] },
+    { "id": "mard-120", "name": "Mard 120 色套装", "colorCount": 120, "colorCodes": [] },
+    { "id": "mard-221", "name": "Mard 221 色套装", "colorCount": 221, "colorCodes": [] }
+  ]
+}
