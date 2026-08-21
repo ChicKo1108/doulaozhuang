@@ -15,7 +15,7 @@ COPY packages/shared-types/package.json packages/shared-types/package.json
 RUN npm ci
 
 COPY . .
-RUN node node_modules/prisma/build/index.js generate --schema apps/api/prisma/schema.prisma \
+RUN node apps/api/node_modules/prisma/build/index.js generate --schema apps/api/prisma/schema.prisma \
   && npm run build:engine \
   && npm run build:api \
   && chmod +x deploy/entrypoint.sh
@@ -30,9 +30,9 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* \
   && useradd --system --uid 10001 --create-home appuser
 
-COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/apps/api/dist ./apps/api/dist
 COPY --from=build /app/apps/api/prisma ./apps/api/prisma
+COPY --from=build /app/apps/api/node_modules ./apps/api/node_modules
 COPY --from=build /app/packages ./packages
 COPY --from=build /app/deploy/entrypoint.sh ./deploy/entrypoint.sh
 
