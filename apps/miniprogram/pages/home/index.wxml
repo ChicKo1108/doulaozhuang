@@ -1,7 +1,7 @@
 <view class="page">
   <view wx:if="{{!isLoggedIn}}" class="empty-state"><view class="empty-illustration"><image src="/assets/icons/user-round.png" mode="aspectFit" /></view><text class="empty-title">请先登录</text><text class="empty-copy">登录后即可创建豆仓并保存你的拼豆图纸。</text><button class="primary-button" bindtap="retryLogin">微信登录</button><text wx:if="{{loginError}}" class="login-error">{{loginError}}</text></view>
   <block wx:else>
-  <view class="manor-head"><view class="roof-beads"><view class="roof-bead"></view><view class="roof-bead"></view><view class="roof-bead"></view><view class="roof-bead"></view><view class="roof-bead"></view><view class="roof-bead"></view><view class="roof-bead"></view></view><view class="manor-copy"><view class="manor-kicker"><view class="manor-greeting-line"><text>我是</text><text class="manor-brand">豆老庄</text><text>的庄豆豆，</text></view><text>今天也一起拼豆吧~</text></view><text class="manor-note">图纸夹里收着 {{totalPatterns}} 个灵感</text><button class="manor-action" bindtap="goToPatterns">AI生图纸</button></view><image class="manor-character" src="/assets/brand/zhuangdoudou-transparent-v1.png" mode="aspectFit"/></view>
+  <view class="manor-head"><view class="roof-beads"><view class="roof-bead"></view><view class="roof-bead"></view><view class="roof-bead"></view><view class="roof-bead"></view><view class="roof-bead"></view><view class="roof-bead"></view><view class="roof-bead"></view></view><view class="manor-copy"><view class="manor-kicker"><view class="manor-greeting-line"><text>我是</text><text class="manor-brand">豆老庄</text><text>的庄豆豆，</text></view><text>今天也一起拼豆吧~</text></view><text class="manor-note">图纸夹里收着 {{totalPatterns}} 个灵感</text><button class="manor-action" bindtap="goToPatterns">AI生图纸</button></view><image class="manor-character" src="/assets/brand/zhuangdoudou-transparent-v1.webp" mode="aspectFit"/></view>
 
   <view wx:if="{{totalPatterns}}" class="section-head"><view class="bead-flower"><view class="flower-bead"></view><view class="flower-bead"></view><view class="flower-bead"></view><view class="flower-bead"></view></view><text>我的图纸</text><text class="section-count">{{totalPatterns}} 张</text></view>
 
@@ -23,7 +23,7 @@
   </view>
 
   <view wx:else class="empty-state">
-    <view class="empty-illustration"><image src="/assets/design-system/zhuangdoudou-crafting.png" mode="aspectFit" /></view>
+    <view class="empty-illustration"><image src="/assets/design-system/zhuangdoudou-crafting.webp" mode="aspectFit" /></view>
     <text class="empty-title">还没有图纸</text>
     <text class="empty-copy">上传一张图片，系统会自动生成 Mard 221 色拼豆图纸。</text>
     <button class="primary-button" bindtap="goToPatterns"><image src="/assets/icons/image-plus-white.png" mode="aspectFit" />创建第一张图纸</button>
