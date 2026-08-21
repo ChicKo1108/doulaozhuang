@@ -6,6 +6,7 @@
     "pages/inventory/index",
     "pages/profile/index"
   ],
+  "lazyCodeLoading": "requiredComponents",
   "window": {
     "navigationBarTitleText": "豆老庄",
     "navigationBarBackgroundColor": "#FFF7E8",
